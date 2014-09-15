@@ -3,8 +3,102 @@
 <head>
   <meta charset=utf-8>
   <title>MP4 profile tests</title>
+  <style>
+    body {
+      font-family: Sans-serif;
+      background-color: darkgray;
+    }
+    h1 {
+      width: 100%;
+      padding: 24px;
+      text-align: center;
+      background-color: lightblue;
+    }
+    #video-container {
+      margin: 10px auto;
+      width: 72%;
+      background-color: lightgray;
+    }
+    div.video-test video {
+      float: right;
+    }
+    div.video-test p {
+      font-size: 18pt;
+      margin: 10px;
+    }
+    p.title {
+      font-weight: bold;
+    }
+    p.error {
+      color: red;
+    }
+    p.success {
+      color: green;
+    }
+    div.video-test:after {
+      content: "";
+      display: block;
+      clear: both;
+    }
+  </style>
 </head>
 <body>
   <h1>Profile tests for mp4 playback</h1>
+  <div id=video-container>
+  </div>
+  <script>
+    files = [
+      'stockholm-baseline-3.0.mp4',
+      'stockholm-baseline-3.1.mp4',
+      'stockholm-main-3.1.mp4',
+      'stockholm-main-4.0.mp4',
+      'stockholm-high-4.0.mp4',
+      'stockholm-high-4.1.mp4',
+      'stockholm-high-4.2.mp4',
+      'stockholm-high-5.0.mp4',
+      'stockholm-high-5.1.mp4',
+      'stockholm-high-5.2.mp4',
+     ];
+     document.addEventListener('DOMContentLoaded', function(event) {
+      var div = document.querySelector('#video-container');
+      for (index in files) {
+        var d = document.createElement('div');
+        d.classList.add('video-test');
+        var v = document.createElement('video');
+
+        v.addEventListener('playing', function mark(event) {
+          var p = event.target.parentElement.children[2];
+          p.textContent = 'playing...';
+          // We see to fire canplay more than we should...
+          v.removeEventListener(event.type, mark);
+        });
+        v.addEventListener('ended', function(event) {
+          var p = event.target.parentElement.children[2];
+          p.classList.add('success');
+          p.textContent = 'playback successful';
+        });
+        v.addEventListener('error', function(event) {
+          var p = event.target.parentElement.children[2];
+          p.classList.add('error');
+          p.textContent = 'FAILED';
+        });
+
+        d.appendChild(v);
+        var p = document.createElement('p');
+        p.classList.add('title');
+        p.textContent = files[index];
+        d.appendChild(p);
+        var p = document.createElement('p')
+        p.classList.add('result');
+        p.textContent = 'Loading...';
+        d.appendChild(p);
+
+        div.appendChild(d);
+        v.controls = true;
+        v.src = files[index];
+        v.play();
+      }
+   });
+  </script>
 </body>
 </html>
